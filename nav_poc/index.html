@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      img {
+        width: 80%;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="./Cloudrise.jpg" id="mapImg" />
+    <canvas id="mapCanvas"></canvas>
+
+    <script>
+      const imgWidth = 2560;
+      const imgHeight = 1440;
+      const rectSize = 50;
+
+      const image = document.getElementById("mapImg");
+      const canvas = document.getElementById("mapCanvas");
+      const context = canvas.getContext("2d");
+
+      const drawCanvas = (points) => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.position = "absolute";
+        canvas.style.left = image.offsetLeft + "px";
+        canvas.style.top = image.offsetTop + "px";
+        canvas.width = image.width;
+        canvas.height = image.height;
+        canvas.style.cursor = "pointer";
+        context.strokeStyle = "red";
+
+        const elements = points.map((point) => ({
+          x: (point.x / imgWidth) * canvas.width - rectSize / 2,
+          y: (point.y / imgHeight) * canvas.height - rectSize / 2,
+          name: point.name
+        }));
+
+        elements.forEach((element) => {
+          context.strokeRect(element.x, element.y, rectSize, rectSize);
+        });
+
+        canvas.addEventListener("click", (event) => {
+          const x = event.pageX - canvas.offsetLeft - canvas.clientLeft;
+          const y = event.pageY - canvas.offsetTop - canvas.clientTop;
+
+          elements.forEach((element) => {
+            const xDelta = x - element.x;
+            const yDelta = y - element.y;
+            if (
+              xDelta > 0 &&
+              xDelta < rectSize &&
+              yDelta > 0 &&
+              yDelta < rectSize
+            ) {
+              console.log('Clicked on:', element.name);
+            }
+          });
+        });
+      };
+
+      const points = [{ x: 1414, y: 696, name: 'Map of Five Sacred Mountains' }]
+      window.onload = () => drawCanvas(points);
+      window.onresize = () => drawCanvas(points);
+    </script>
+  </body>
+</html>
